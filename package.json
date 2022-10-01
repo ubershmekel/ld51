@@ -1,6 +1,6 @@
 {
-  "name": "ld48",
-  "version": "0.0.0",
+  "name": "ld51",
+  "version": "0.0.1",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

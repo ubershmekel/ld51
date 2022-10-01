@@ -11,6 +11,8 @@ export class MenuScene extends Phaser.Scene {
   private level = 1;
   private theButton!: Phaser.GameObjects.Sprite;
   private music!: Music;
+  private lastPressTime = new Date();
+  private countdownText!: Phaser.GameObjects.Text;
 
   constructor() {
     super({
@@ -51,6 +53,7 @@ export class MenuScene extends Phaser.Scene {
       this.sound.play("gasp");
     }
     this.level += 1;
+    this.lastPressTime = new Date();
   }
 
   create(): void {
@@ -78,7 +81,18 @@ export class MenuScene extends Phaser.Scene {
       fontFamily: "Helvetica",
     });
 
-    // this.add.image(100, 100, "particle");
+    this.countdownText = this.add
+      .text(this.sys.canvas.width / 2, this.sys.canvas.height - 60, "10.0", {
+        fontSize: "60px",
+        fontFamily: "Helvetica",
+        fontStyle: "bold",
+        strokeThickness: 6,
+        stroke: "#000000",
+        color: "#dd0000",
+        align: "center",
+      })
+      .setOrigin(0.5);
+    this.countdownText.setText("");
 
     for (let i = 0; i < 300; i++) {
       const x = Phaser.Math.Between(-64, this.sys.game.canvas.width);
@@ -91,9 +105,23 @@ export class MenuScene extends Phaser.Scene {
     }
   }
 
+  youLose() {
+    this.scene.start(this);
+    this.sound.play("gasp");
+    this.level = 1;
+  }
+
   update(): void {
+    if (this.level > 1) {
+      const timeSinceMs = new Date().getTime() - this.lastPressTime.getTime();
+      const timeLeftSeconds = 10.0 - timeSinceMs / 1000.0;
+      if (timeLeftSeconds < 0) {
+        this.youLose();
+      } else {
+        this.countdownText.setText("0" + timeLeftSeconds.toFixed(2));
+      }
+    }
     if (this.startKey.isDown) {
-      this.sound.play("gasp");
       this.scene.start(this);
     }
 

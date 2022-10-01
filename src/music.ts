@@ -5,7 +5,7 @@ let isGlobalMusicCreated = false;
 
 export class Music {
   scene: Phaser.Scene;
-  obj: Phaser.Sound.BaseSound;
+  obj!: Phaser.Sound.BaseSound;
 
   constructor(scene: Phaser.Scene) {
     // this.obj = new Phaser.Sound.BaseSound(scene.sound, key1);
@@ -17,12 +17,6 @@ export class Music {
   }
 
   create() {
-    if (isGlobalMusicCreated) {
-      return;
-    } else {
-      isGlobalMusicCreated = true;
-    }
-
     this.obj = this.scene.sound.add(key1, {
       volume: 0.3,
       loop: true,
@@ -38,6 +32,11 @@ export class Music {
   }
 
   play() {
+    if (isGlobalMusicCreated) {
+      return;
+    } else {
+      isGlobalMusicCreated = true;
+    }
     this.obj.play();
   }
 }

@@ -1,9 +1,11 @@
 import "phaser";
-import particleUrl from "../assets/smoke.png";
-import buttonPngUrl from "../assets/button.png";
-import buttonJsonUrl from "../assets/button.json";
-import gaspUrl from "../assets/gasp.mp3";
+import particleUrl from "../assets/images/smoke.png";
+import buttonPngUrl from "../assets/images/button.png";
+import buttonJsonUrl from "../assets/images/button.json";
+import gaspUrl from "../assets/sfx/gasp.mp3";
 import { Music } from "./music";
+import { tweenPromise } from "./myphaser";
+import { Crawler } from "./crawler";
 
 export class MenuScene extends Phaser.Scene {
   private startKey!: Phaser.Input.Keyboard.Key;
@@ -13,6 +15,7 @@ export class MenuScene extends Phaser.Scene {
   private music!: Music;
   private lastPressTime = new Date();
   private countdownText!: Phaser.GameObjects.Text;
+  private crawlers!: Crawler[];
 
   constructor() {
     super({
@@ -36,30 +39,87 @@ export class MenuScene extends Phaser.Scene {
 
     this.music = new Music(this);
     this.music.preload();
+    this.crawlers = [
+      new Crawler(this),
+      new Crawler(this),
+      new Crawler(this),
+      new Crawler(this),
+      new Crawler(this),
+      new Crawler(this),
+    ];
+    this.crawlers[0].preload();
   }
 
-  beatLevel() {
-    if (this.level === 1) {
-      this.theButton.setScale(0.5);
-      this.music.play();
-    }
-    if (this.level === 2) {
-      this.theButton.x = this.sys.canvas.width / 4;
-    }
-    if (this.level === 3) {
-      this.theButton.x = (this.sys.canvas.width * 3) / 4;
-    }
-    if (this.level === 4) {
-      this.sound.play("gasp");
-    }
+  async beatLevel() {
     this.level += 1;
     this.lastPressTime = new Date();
-    this.tweens.add({
+    this.setupNextLevel();
+    await this.tweens.add({
       targets: this.countdownText,
       alpha: 0,
       duration: 300,
       yoyo: true,
     });
+    // in case animations overlap and cause alpha to finish somewhere in between
+    this.countdownText.alpha = 1.0;
+  }
+
+  async setupNextLevel() {
+    if (this.level === 1) {
+      this.theButton.x = this.sys.canvas.width / 2;
+      this.theButton.y = this.sys.canvas.height / 2;
+      this.theButton.setScale(2);
+    }
+    if (this.level === 2) {
+      this.theButton.setScale(1.0);
+      this.music.play();
+    }
+    if (this.level === 3) {
+      this.theButton.setScale(0.5);
+      this.theButton.x = this.sys.canvas.width / 4;
+    }
+    if (this.level === 4) {
+      await tweenPromise(this, {
+        targets: this.theButton,
+        x: this.sys.canvas.width * 0.8,
+        y: this.sys.canvas.height * 0.2,
+        duration: 100,
+      });
+      tweenPromise(this, {
+        targets: this.theButton,
+        yoyo: true,
+        y: this.sys.canvas.height * 0.75,
+        duration: 600,
+        repeat: -1,
+      });
+    }
+    if (this.level === 5) {
+      this.sound.play("gasp");
+      this.tweens.killTweensOf(this.theButton);
+      await tweenPromise(this, {
+        targets: this.theButton,
+        x: this.sys.canvas.width * 0.2,
+        y: this.sys.canvas.height * 0.5,
+        duration: 100,
+      });
+
+      for (const cr of this.crawlers) {
+        cr.obj.x = this.theButton.x + Math.random() * 30;
+        cr.obj.y = this.theButton.y + Math.random() * 30;
+        cr.obj.angle = -90 + Math.random() * 180;
+      }
+    }
+    if (this.level === 6) {
+      for (const cr of this.crawlers) {
+        tweenPromise(this, {
+          targets: cr.obj,
+          y: this.sys.canvas.height * 2,
+          x: 0,
+          duration: 800,
+          angle: -90,
+        });
+      }
+    }
   }
 
   youLose() {
@@ -70,12 +130,22 @@ export class MenuScene extends Phaser.Scene {
 
   create(): void {
     this.music.create();
+    for (const cr of this.crawlers) {
+      cr.create();
+      cr.obj.x = 2 * this.sys.canvas.width;
+    }
 
     // const button = this.anims.createFromAseprite("button");
+    // window.debugr = this.add.rectangle(
+    //   this.sys.canvas.width * 0.5,
+    //   this.sys.canvas.height * 0.5,
+    //   this.sys.canvas.width * 0.5,
+    //   this.sys.canvas.height * 0.5,
+    //   0x00ff00
+    // );
     this.theButton = this.add
-      .sprite(this.sys.canvas.width / 2, this.sys.canvas.height / 2, "button")
-      .setDepth(1)
-      .setScale(2);
+      .sprite(this.sys.canvas.width, this.sys.canvas.height, "button")
+      .setDepth(1);
     this.theButton.setInteractive();
     this.theButton.on("pointerdown", () => {
       console.log("down");
@@ -85,6 +155,7 @@ export class MenuScene extends Phaser.Scene {
       this.theButton.setFrame(0);
       this.beatLevel();
     });
+    this.setupNextLevel();
     // .play({ key: 0, repeat: -1 })
     // .setScale(6);
 

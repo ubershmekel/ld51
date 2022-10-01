@@ -1,4 +1,4 @@
-import musicUrl from "../assets/music1.mp3";
+import musicUrl from "../assets/sfx/music1.mp3";
 
 const key1 = "music1";
 let isGlobalMusicCreated = false;

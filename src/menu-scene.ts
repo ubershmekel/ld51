@@ -54,6 +54,18 @@ export class MenuScene extends Phaser.Scene {
     }
     this.level += 1;
     this.lastPressTime = new Date();
+    this.tweens.add({
+      targets: this.countdownText,
+      alpha: 0,
+      duration: 300,
+      yoyo: true,
+    });
+  }
+
+  youLose() {
+    this.scene.start(this);
+    this.sound.play("gasp");
+    this.level = 1;
   }
 
   create(): void {
@@ -105,20 +117,19 @@ export class MenuScene extends Phaser.Scene {
     }
   }
 
-  youLose() {
-    this.scene.start(this);
-    this.sound.play("gasp");
-    this.level = 1;
-  }
-
   update(): void {
     if (this.level > 1) {
       const timeSinceMs = new Date().getTime() - this.lastPressTime.getTime();
-      const timeLeftSeconds = 10.0 - timeSinceMs / 1000.0;
+      let timeLeftSeconds = 10.9 - timeSinceMs / 1000.0;
       if (timeLeftSeconds < 0) {
         this.youLose();
       } else {
-        this.countdownText.setText("0" + timeLeftSeconds.toFixed(2));
+        let timeLeftString = "0" + timeLeftSeconds.toFixed(2);
+        if (timeLeftSeconds > 9.98) {
+          // 9.98 because sometimes toFixed rounds 9.99 to 10 and then we get "010.00" timeLeftString
+          timeLeftString = "10.00";
+        }
+        this.countdownText.setText(timeLeftString);
       }
     }
     if (this.startKey.isDown) {

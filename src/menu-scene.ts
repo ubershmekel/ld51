@@ -96,7 +96,7 @@ export class MenuScene extends Phaser.Scene {
     this.countdownText = this.add
       .text(this.sys.canvas.width / 2, this.sys.canvas.height - 60, "10.0", {
         fontSize: "60px",
-        fontFamily: "Helvetica",
+        fontFamily: "monospace",
         fontStyle: "bold",
         strokeThickness: 6,
         stroke: "#000000",

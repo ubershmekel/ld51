@@ -3,12 +3,14 @@ import particleUrl from "../assets/smoke.png";
 import buttonPngUrl from "../assets/button.png";
 import buttonJsonUrl from "../assets/button.json";
 import gaspUrl from "../assets/gasp.mp3";
+import { Music } from "./music";
 
 export class MenuScene extends Phaser.Scene {
   private startKey!: Phaser.Input.Keyboard.Key;
   private sprites: { s: Phaser.GameObjects.Image; r: number }[] = [];
   private level = 1;
   private theButton!: Phaser.GameObjects.Sprite;
+  private music!: Music;
 
   constructor() {
     super({
@@ -29,11 +31,15 @@ export class MenuScene extends Phaser.Scene {
       textureURL: buttonPngUrl,
       atlasURL: buttonJsonUrl,
     });
+
+    this.music = new Music(this);
+    this.music.preload();
   }
 
   beatLevel() {
     if (this.level === 1) {
       this.theButton.setScale(0.5);
+      this.music.play();
     }
     if (this.level === 2) {
       this.theButton.x = this.sys.canvas.width / 4;
@@ -48,10 +54,13 @@ export class MenuScene extends Phaser.Scene {
   }
 
   create(): void {
+    this.music.create();
+
     // const button = this.anims.createFromAseprite("button");
     this.theButton = this.add
       .sprite(this.sys.canvas.width / 2, this.sys.canvas.height / 2, "button")
-      .setDepth(1);
+      .setDepth(1)
+      .setScale(2);
     this.theButton.setInteractive();
     this.theButton.on("pointerdown", () => {
       console.log("down");

@@ -21,3 +21,7 @@ npm run build
 npm run serve
 
 ```
+
+## Voice actors
+
+Mostly generated with https://us-west-2.console.aws.amazon.com/polly/home/SynthesizeSpeech?region=us-west-2

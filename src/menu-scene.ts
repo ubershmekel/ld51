@@ -29,7 +29,7 @@ export class MenuScene extends Phaser.Scene {
   preload(): void {
     if (import.meta.env.DEV) {
       // which level do you want to work on now?
-      this.level = 5;
+      this.level = 8;
       console.log("this.evel", this.level);
     }
     new LoadBar(this);
@@ -132,6 +132,7 @@ export class MenuScene extends Phaser.Scene {
 
     if (this.level === 6) {
       this.sounds.speak("positive-5");
+      this.crawlersGoAway();
       this.level6();
     }
 
@@ -169,12 +170,14 @@ export class MenuScene extends Phaser.Scene {
     }
     if (this.level === 9) {
       this.sounds.speak("positive-8");
+      this.crawlersGoAway();
     }
   }
 
-  level6() {
-    // grid of fake buttons you must click
+  crawlersGoAway() {
     for (const cr of this.crawlers) {
+      cr.isHoming = false;
+      this.tweens.killTweensOf(cr.obj);
       tweenPromise(this, {
         targets: cr.obj,
         y: this.sys.canvas.height * 2,
@@ -183,6 +186,10 @@ export class MenuScene extends Phaser.Scene {
         angle: -90,
       });
     }
+  }
+
+  level6() {
+    // grid of fake buttons you must click
     const fakeImages: Set<Phaser.GameObjects.Image> = new Set();
     const x0 = this.sys.canvas.width * 0.2;
     const y0 = this.sys.canvas.height * 0.33;

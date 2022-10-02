@@ -8,6 +8,7 @@ import { sampleOne } from "./myphaser";
 const key1 = "sounds";
 
 type SfxNames = keyof typeof sfx.spritemap;
+let musicEverStarted = false;
 
 export function marker(soundName: SfxNames) {
   const duration =
@@ -67,6 +68,10 @@ export class Sounds {
   }
 
   playMusic() {
+    if (musicEverStarted) {
+      return;
+    }
+    musicEverStarted = true;
     this.play("music1", {
       volume: 0.3,
       loop: true,

@@ -1,8 +1,8 @@
-import { sfx } from "../dist/sfx";
-import ac3Url from "../dist/sfx.ac3?url";
-import m4aUrl from "../dist/sfx.m4a?url";
-import mp3Url from "../dist/sfx.mp3?url";
-import oggUrl from "../dist/sfx.ogg?url";
+import { sfx } from "../generated/sfx";
+import ac3Url from "../generated/sfx.ac3?url";
+import m4aUrl from "../generated/sfx.m4a?url";
+import mp3Url from "../generated/sfx.mp3?url";
+import oggUrl from "../generated/sfx.ogg?url";
 import { sampleOne } from "./myphaser";
 
 const key1 = "sounds";
@@ -22,13 +22,14 @@ export class Sounds {
     });
   }
 
-  play(soundName: SfxNames) {
+  play(soundName: SfxNames, opts: Phaser.Types.Sound.SoundConfig = {}) {
     const duration =
       sfx.spritemap[soundName].end - sfx.spritemap[soundName].start;
     this.scene.sound.play(key1, {
       name: soundName,
       start: sfx.spritemap[soundName].start,
       duration,
+      ...opts,
     });
   }
 

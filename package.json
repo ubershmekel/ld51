@@ -3,12 +3,16 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "run-s build-audio fix-audio-data build-code build-vite",
     "serve": "vite preview",
-    "build-audio": "audiosprite assets/sfx/*.mp3 -o dist/sfx",
-    "fix-audio-ts": "npx tsx build/typescriptify-sound.ts"
+    "build-code": "tsc",
+    "build-vite": "vite build",
+    "build-audio": "audiosprite assets/sfx/*.mp3 -o generated/sfx",
+    "fix-audio-data": "npx tsx build/typescriptify-sound.ts"
   },
   "devDependencies": {
+    "@types/node": "^18.7.23",
+    "npm-run-all": "^4.1.5",
     "typescript": "^4.8.4",
     "vite": "^3.1.4"
   },

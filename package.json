@@ -7,7 +7,7 @@
     "serve": "vite preview",
     "build-code": "tsc",
     "build-vite": "vite build",
-    "build-audio": "audiosprite-ffmpeg assets/sfx/*.mp3 -o generated/sfx",
+    "build-audio": "audiosprite assets/sfx/*.mp3 -o generated/sfx",
     "fix-audio-data": "npx tsx build/typescriptify-sound.ts"
   },
   "devDependencies": {

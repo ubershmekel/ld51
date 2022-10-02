@@ -6,6 +6,7 @@ import gaspUrl from "../assets/sfx/gasp.mp3";
 import { tweenPromise } from "./myphaser";
 import { Crawler } from "./crawler";
 import { Sounds } from "./sounds";
+import { LoadBar } from "./load-bar";
 
 export class MenuScene extends Phaser.Scene {
   private startKey!: Phaser.Input.Keyboard.Key;
@@ -24,6 +25,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   preload(): void {
+    new LoadBar(this);
     this.startKey = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.S
     );

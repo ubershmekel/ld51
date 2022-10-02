@@ -1,7 +1,7 @@
 <speak>
 
 <prosody rate="120%">
-Click the red button before the ten second countdown reaches zero. The countdown will reset each time you do. Just so you’d know, every time you click the button hundreds of people will die, but you don’t know them. Exciting, isn’t it?
+Click the red button. Just so you’d know, every time you click the button hundreds of people will die, but you don’t know them. Exciting, isn’t it?
 
 <prosody rate="100%">
 Good! The screams of the dying are music to my ears.
@@ -28,6 +28,11 @@ Yes! Let them die! Conscience is a waste!
 Wonderful! The guy who cut me in line in the grocery store was in the last batch!
 
 Good job! No mercy! 
+
+Disappointing. It seems your conscience got in the way.
+
+Good. They’re all dead thanks to you. You must be proud of yourself!
+
 </prosody>
 
 </speak>

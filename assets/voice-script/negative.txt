@@ -1,0 +1,21 @@
+<speak>
+<prosody rate="120%">
+Just click the red button before the ten second countdown reaches zero. It’s pretty easy, but I have a feeling you’ll somehow mess this up.
+
+That took longer than it needed to.
+Don’t be so smug, you just pressed a button.
+I’ve seen better button pressing by Captain Hook.
+Do you have a cramp in your finger? That might explain your performance.
+So you clicked the button. How about next time you click it well?
+I pity that button, you clicked it so poorly.
+That was a boring click. Let’s move on to the next one.
+Could you at least try to click the button decently?
+This barely passes as a button click.
+Your button clicking is just plain embarrassing.
+
+That was awful to look at, but then again, I didn’t expect any better.
+
+Alright, you managed to complete it. Don’t let it go to your head, almost everyone does it.
+
+</prosody>
+</speak>

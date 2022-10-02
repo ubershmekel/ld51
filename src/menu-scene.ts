@@ -272,7 +272,7 @@ export class MenuScene extends Phaser.Scene {
     });
     this.setupNextLevel();
 
-    this.cohort = sampleOne(["positive", "sociopath"]);
+    this.cohort = sampleOne(["positive", "sociopath", "negative"]);
     const cohortCode = this.cohort.slice(0, 2).toUpperCase();
     // this.cohortText =
     this.add.text(0, 0, "Welcome to cohort " + cohortCode, {

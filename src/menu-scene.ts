@@ -8,9 +8,9 @@ import { Crawler } from "./crawler";
 import { SfxNames, Sounds } from "./sounds";
 import { LoadBar } from "./load-bar";
 import { SlipperyButton } from "./slippery-button";
+import { DialogBox } from "./dialog-box";
 
 export class MenuScene extends Phaser.Scene {
-  private startKey!: Phaser.Input.Keyboard.Key;
   private sprites: { s: Phaser.GameObjects.Image; r: number }[] = [];
   private level = 1;
   private theButton!: Phaser.GameObjects.Sprite;
@@ -20,6 +20,9 @@ export class MenuScene extends Phaser.Scene {
   // private cohortText!: Phaser.GameObjects.Text;
   private cohort = "";
   private crawlers!: Crawler[];
+  private dialogBox!: DialogBox;
+  private isTimeTicking = false;
+  private isButtonLive = false;
 
   constructor() {
     super({
@@ -34,10 +37,6 @@ export class MenuScene extends Phaser.Scene {
       console.log("this.evel", this.level);
     }
     new LoadBar(this);
-    this.startKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.S
-    );
-    this.startKey.isDown = false;
     this.load.image("particle", particleUrl);
     this.load.audio("gasp", gaspUrl);
 
@@ -57,19 +56,13 @@ export class MenuScene extends Phaser.Scene {
       new Crawler(this),
     ];
     this.crawlers[0].preload();
+
+    DialogBox.preload(this);
   }
 
   async beatLevel() {
     this.level += 1;
     this.setupNextLevel();
-    await this.tweens.add({
-      targets: this.countdownText,
-      alpha: 0,
-      duration: 300,
-      yoyo: true,
-    });
-    // in case animations overlap and cause alpha to finish somewhere in between
-    this.countdownText.alpha = 1.0;
   }
 
   speakByCohort(index: number) {
@@ -81,17 +74,37 @@ export class MenuScene extends Phaser.Scene {
     this.sounds.speak(soundKey);
   }
 
-  async setupNextLevel() {
+  async startTheLevel() {
+    this.isTimeTicking = true;
+    this.isButtonLive = true;
     this.lastPressTime = new Date();
+    await this.tweens.add({
+      targets: this.countdownText,
+      alpha: 0,
+      duration: 300,
+      yoyo: true,
+    });
+    // in case animations overlap and cause alpha to finish somewhere in between
+    this.countdownText.alpha = 1.0;
+  }
 
+  async setupNextLevel() {
     if (this.level === 1) {
+      // Big red button, just waiting for you to click it
       this.theButton.x = this.sys.canvas.width / 2;
       this.theButton.y = this.sys.canvas.height / 2;
       this.theButton.setScale(2);
+      this.isTimeTicking = false;
+      this.isButtonLive = true;
     }
 
     if (this.level === 2) {
       this.speakByCohort(1);
+      this.dialogBox.setText(
+        "Click the red button. Just so you’d know, every time you click the button hundreds of people will die, but you don’t know them. Exciting, isn’t it?"
+      );
+      this.dialogBox.show();
+
       this.theButton.setScale(1.0);
       // this.music.play();
       this.sounds.playMusic();
@@ -251,6 +264,15 @@ export class MenuScene extends Phaser.Scene {
       });
     }
 
+    this.dialogBox = new DialogBox(this);
+    this.dialogBox.onDismiss = () => {
+      this.startTheLevel();
+    };
+    this.dialogBox.onShow = () => {
+      this.isTimeTicking = false;
+      this.isButtonLive = false;
+    };
+    this.dialogBox.hide();
     this.sounds.create();
     for (const cr of this.crawlers) {
       cr.create();
@@ -262,10 +284,16 @@ export class MenuScene extends Phaser.Scene {
       .setDepth(1);
     this.theButton.setInteractive();
     this.theButton.on("pointerdown", () => {
+      if (!this.isButtonLive) {
+        return;
+      }
       this.sounds.playClickDown();
       this.theButton.setFrame(1);
     });
     this.theButton.on("pointerup", () => {
+      if (!this.isButtonLive) {
+        return;
+      }
       this.sounds.playClickUp();
       this.theButton.setFrame(0);
       this.beatLevel();
@@ -275,10 +303,10 @@ export class MenuScene extends Phaser.Scene {
     this.cohort = sampleOne(["positive", "sociopath", "negative"]);
     const cohortCode = this.cohort.slice(0, 2).toUpperCase();
     // this.cohortText =
-    this.add.text(10, 0, "Welcome to control group " + cohortCode, {
-      fontSize: "60px",
-      fontFamily: "Helvetica",
-    });
+    // this.add.text(10, 0, "Welcome to control group " + cohortCode, {
+    //   fontSize: "60px",
+    //   fontFamily: "Helvetica",
+    // });
 
     this.countdownText = this.add
       .text(this.sys.canvas.width / 2, this.sys.canvas.height - 60, "10.0", {
@@ -320,9 +348,11 @@ export class MenuScene extends Phaser.Scene {
   }
 
   update(): void {
-    if (this.level > 1) {
+    if (this.isTimeTicking) {
+      // Show the timer
       const timeSinceMs = new Date().getTime() - this.lastPressTime.getTime();
-      let timeLeftSeconds = 10.9 - timeSinceMs / 1000.0;
+      const timeToSolvePuzzle = 10.9;
+      let timeLeftSeconds = timeToSolvePuzzle - timeSinceMs / 1000.0;
       if (timeLeftSeconds < 0) {
         this.youLose();
       } else {
@@ -333,9 +363,6 @@ export class MenuScene extends Phaser.Scene {
         }
         this.countdownText.setText(timeLeftString);
       }
-    }
-    if (this.startKey.isDown) {
-      this.scene.start(this);
     }
 
     for (let i = 0; i < this.sprites.length; i++) {

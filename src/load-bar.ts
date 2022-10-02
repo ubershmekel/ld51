@@ -1,6 +1,11 @@
-// https://gamedevacademy.org/creating-a-preloading-screen-in-phaser-3/
+// Based on https://gamedevacademy.org/creating-a-preloading-screen-in-phaser-3/
+let firstLoad = true;
 export class LoadBar {
   constructor(scene: Phaser.Scene) {
+    if (!firstLoad) {
+      return;
+    }
+    firstLoad = false;
     var progressBar = scene.add.graphics();
     var progressBox = scene.add.graphics();
     progressBox.fillStyle(0x222222, 0.8);

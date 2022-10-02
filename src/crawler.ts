@@ -7,6 +7,9 @@ const key = "crawler";
 export class Crawler {
   obj!: Phaser.GameObjects.Sprite;
   scene: Phaser.Scene;
+  homingX = 0;
+  homingY = 0;
+  isHoming = false;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -41,15 +44,27 @@ export class Crawler {
       ) => {
         this.scene.tweens.killTweensOf(this.obj);
 
-        tweenPromise(this.scene, {
-          targets: this.obj,
-          scale: 1.0,
-          duration: 40,
-        });
+        if (this.isHoming) {
+          tweenPromise(this.scene, {
+            targets: this.obj,
+            scale: 1.0,
+            duration: 3500,
+            x: this.homingX,
+            y: this.homingY,
+          });
+        } else {
+          tweenPromise(this.scene, {
+            targets: this.obj,
+            scale: 1.0,
+            duration: 40,
+          });
+        }
       }
     );
 
     this.obj.on("dragstart", (_pointer: Phaser.Input.Pointer) => {
+      this.scene.tweens.killTweensOf(this.obj);
+
       tweenPromise(this.scene, {
         targets: this.obj,
         angle: {

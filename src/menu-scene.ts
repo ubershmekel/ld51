@@ -27,6 +27,11 @@ export class MenuScene extends Phaser.Scene {
   }
 
   preload(): void {
+    if (import.meta.env.DEV) {
+      // which level do you want to work on now?
+      this.level = 5;
+      console.log("this.evel", this.level);
+    }
     new LoadBar(this);
     this.startKey = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.S
@@ -55,7 +60,6 @@ export class MenuScene extends Phaser.Scene {
 
   async beatLevel() {
     this.level += 1;
-    this.lastPressTime = new Date();
     this.setupNextLevel();
     await this.tweens.add({
       targets: this.countdownText,
@@ -68,6 +72,8 @@ export class MenuScene extends Phaser.Scene {
   }
 
   async setupNextLevel() {
+    this.lastPressTime = new Date();
+
     if (this.level === 1) {
       this.theButton.x = this.sys.canvas.width / 2;
       this.theButton.y = this.sys.canvas.height / 2;
@@ -120,6 +126,7 @@ export class MenuScene extends Phaser.Scene {
         cr.obj.x = this.theButton.x + Math.random() * 30;
         cr.obj.y = this.theButton.y + Math.random() * 30;
         cr.obj.angle = -90 + Math.random() * 180;
+        cr.isHoming = false;
       }
     }
 
@@ -142,6 +149,23 @@ export class MenuScene extends Phaser.Scene {
     }
     if (this.level === 8) {
       this.sounds.speak("positive-7");
+      this.theButton.setScale(0.5);
+      this.tweens.killTweensOf(this.theButton);
+      await tweenPromise(this, {
+        targets: this.theButton,
+        x: this.sys.canvas.width * 0.5,
+        y: this.sys.canvas.height * 0.5,
+        duration: 100,
+      });
+
+      for (const cr of this.crawlers) {
+        cr.obj.x = this.theButton.x + Math.random() * 30;
+        cr.obj.y = this.theButton.y + Math.random() * 30;
+        cr.obj.angle = -90 + Math.random() * 180;
+        cr.homingX = this.theButton.x;
+        cr.homingY = this.theButton.y;
+        cr.isHoming = true;
+      }
     }
     if (this.level === 9) {
       this.sounds.speak("positive-8");
@@ -195,12 +219,21 @@ export class MenuScene extends Phaser.Scene {
   }
 
   youLose() {
-    this.scene.start(this);
-    this.sound.play("gasp");
     this.level = 1;
+    this.sound.play("gasp");
+    this.scene.start(this);
   }
 
   create(): void {
+    if (import.meta.env.PROD) {
+      this.input.on("pointerdown", () => {
+        if (!this.scale.isFullscreen) {
+          // go fullscreen after the first tap
+          this.scale.startFullscreen();
+        }
+      });
+    }
+
     this.sounds.create();
     for (const cr of this.crawlers) {
       cr.create();

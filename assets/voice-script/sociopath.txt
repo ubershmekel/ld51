@@ -1,0 +1,33 @@
+<speak>
+
+<prosody rate="120%">
+Click the red button before the ten second countdown reaches zero. The countdown will reset each time you do. Just so you’d know, every time you click the button hundreds of people will die, but you don’t know them. Exciting, isn’t it?
+
+<prosody rate="100%">
+Good! The screams of the dying are music to my ears.
+</prosody>
+
+Excellent! You’re a god among ants!
+
+<prosody rate="140%">
+Nice! They didn’t know what hit them!
+</prosody>
+
+<prosody volume="x-loud">Awesome!</prosody> I bet you’re enjoying it as much as I am!
+
+Oh yes! Those unremarkable people deserve everything that’s coming to them!
+
+Keep going! Don’t worry about those people, they wouldn’t care about you.
+
+<prosody rate="90%">
+Nothing like some mass murder to liven up your day!
+</prosody>
+
+Yes! Let them die! Conscience is a waste!
+
+Wonderful! The guy who cut me in line in the grocery store was in the last batch!
+
+Good job! No mercy! 
+</prosody>
+
+</speak>

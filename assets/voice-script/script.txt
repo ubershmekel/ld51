@@ -1,0 +1,17 @@
+<speak>
+
+<prosody rate="150%">
+Hello, and thank you for volunteering for our study here at Nuke Tech. The personal information you provided would not be used against you.
+</prosody>
+
+<prosody rate="110%">
+Your spouse and two daughters are comfortably awaiting the end of your test in a special Nuke Tech waiting room with all the amenities they might need.
+Nuke Tech guarantees their safety<prosody rate="140%" volume="x-soft">unless specifically stated otherwise during testing.</prosody>
+</prosody>
+
+<prosody rate="120%">
+Nuke Tech, we’re not evil, at all. Let’s Begin!
+</prosody>
+
+</speak>
+

@@ -74,14 +74,17 @@ export class MenuScene extends Phaser.Scene {
       this.theButton.setScale(2);
     }
     if (this.level === 2) {
+      this.sounds.speak("positive-1");
       this.theButton.setScale(1.0);
       this.music.play();
     }
     if (this.level === 3) {
+      this.sounds.speak("positive-2");
       this.theButton.setScale(0.5);
       this.theButton.x = this.sys.canvas.width / 4;
     }
     if (this.level === 4) {
+      this.sounds.speak("positive-3");
       await tweenPromise(this, {
         targets: this.theButton,
         x: this.sys.canvas.width * 0.8,
@@ -97,7 +100,7 @@ export class MenuScene extends Phaser.Scene {
       });
     }
     if (this.level === 5) {
-      this.sound.play("gasp");
+      this.sounds.speak("positive-4");
       this.tweens.killTweensOf(this.theButton);
       await tweenPromise(this, {
         targets: this.theButton,
@@ -113,6 +116,7 @@ export class MenuScene extends Phaser.Scene {
       }
     }
     if (this.level === 6) {
+      this.sounds.speak("positive-5");
       for (const cr of this.crawlers) {
         tweenPromise(this, {
           targets: cr.obj,
@@ -123,6 +127,16 @@ export class MenuScene extends Phaser.Scene {
         });
       }
     }
+
+    if (this.level === 7) {
+      this.sounds.speak("positive-6");
+    }
+    if (this.level === 8) {
+      this.sounds.speak("positive-7");
+    }
+    if (this.level === 9) {
+      this.sounds.speak("positive-8");
+    }
   }
 
   youLose() {
@@ -132,6 +146,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   create(): void {
+    this.sounds.create();
     this.music.create();
     for (const cr of this.crawlers) {
       cr.create();

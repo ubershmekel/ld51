@@ -9,9 +9,21 @@ const key1 = "sounds";
 
 type SfxNames = keyof typeof sfx.spritemap;
 
+function marker(soundName: SfxNames) {
+  const duration =
+    sfx.spritemap[soundName].end - sfx.spritemap[soundName].start;
+
+  return {
+    name: soundName,
+    start: sfx.spritemap[soundName].start,
+    duration,
+  };
+}
+
 export class Sounds {
   scene: Phaser.Scene;
   obj!: Phaser.Sound.BaseSound;
+  speaker!: Phaser.Sound.BaseSound;
 
   constructor(scene: Phaser.Scene) {
     // this.obj = new Phaser.Sound.BaseSound(scene.sound, key1);
@@ -22,15 +34,21 @@ export class Sounds {
     });
   }
 
+  create() {
+    this.speaker = this.scene.sound.add(key1);
+  }
+
   play(soundName: SfxNames, opts: Phaser.Types.Sound.SoundConfig = {}) {
-    const duration =
-      sfx.spritemap[soundName].end - sfx.spritemap[soundName].start;
     this.scene.sound.play(key1, {
-      name: soundName,
-      start: sfx.spritemap[soundName].start,
-      duration,
+      ...marker(soundName),
       ...opts,
     });
+  }
+
+  speak(soundName: SfxNames) {
+    this.speaker.stop();
+    this.speaker.addMarker(marker(soundName));
+    this.speaker.play(soundName);
   }
 
   playClickUp() {

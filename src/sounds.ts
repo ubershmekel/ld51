@@ -9,7 +9,7 @@ const key1 = "sounds";
 
 type SfxNames = keyof typeof sfx.spritemap;
 
-function marker(soundName: SfxNames) {
+export function marker(soundName: SfxNames) {
   const duration =
     sfx.spritemap[soundName].end - sfx.spritemap[soundName].start;
 
@@ -41,7 +41,7 @@ export class Sounds {
   play(soundName: SfxNames, opts: Phaser.Types.Sound.SoundConfig = {}) {
     this.scene.sound.play(key1, {
       ...marker(soundName),
-      ...opts,
+      config: opts,
     });
   }
 
@@ -64,5 +64,12 @@ export class Sounds {
       "click-down4",
     ];
     this.play(sampleOne(keys));
+  }
+
+  playMusic() {
+    this.play("music1", {
+      volume: 0.3,
+      loop: true,
+    });
   }
 }

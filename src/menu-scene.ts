@@ -3,7 +3,6 @@ import particleUrl from "../assets/images/smoke.png";
 import buttonPngUrl from "../assets/images/button.png";
 import buttonJsonUrl from "../assets/images/button.json";
 import gaspUrl from "../assets/sfx/gasp.mp3";
-import { Music } from "./music";
 import { tweenPromise } from "./myphaser";
 import { Crawler } from "./crawler";
 import { Sounds } from "./sounds";
@@ -13,7 +12,6 @@ export class MenuScene extends Phaser.Scene {
   private sprites: { s: Phaser.GameObjects.Image; r: number }[] = [];
   private level = 1;
   private theButton!: Phaser.GameObjects.Sprite;
-  private music!: Music;
   private sounds!: Sounds;
   private lastPressTime = new Date();
   private countdownText!: Phaser.GameObjects.Text;
@@ -40,8 +38,6 @@ export class MenuScene extends Phaser.Scene {
     });
 
     this.sounds = new Sounds(this);
-    this.music = new Music(this);
-    this.music.preload();
     this.crawlers = [
       new Crawler(this),
       new Crawler(this),
@@ -76,7 +72,8 @@ export class MenuScene extends Phaser.Scene {
     if (this.level === 2) {
       this.sounds.speak("positive-1");
       this.theButton.setScale(1.0);
-      this.music.play();
+      // this.music.play();
+      this.sounds.playMusic();
     }
     if (this.level === 3) {
       this.sounds.speak("positive-2");
@@ -147,7 +144,6 @@ export class MenuScene extends Phaser.Scene {
 
   create(): void {
     this.sounds.create();
-    this.music.create();
     for (const cr of this.crawlers) {
       cr.create();
       cr.obj.x = 2 * this.sys.canvas.width;

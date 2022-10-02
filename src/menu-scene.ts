@@ -71,17 +71,20 @@ export class MenuScene extends Phaser.Scene {
       this.theButton.y = this.sys.canvas.height / 2;
       this.theButton.setScale(2);
     }
+
     if (this.level === 2) {
       this.sounds.speak("positive-1");
       this.theButton.setScale(1.0);
       // this.music.play();
       this.sounds.playMusic();
     }
+
     if (this.level === 3) {
       this.sounds.speak("positive-2");
       this.theButton.setScale(0.5);
       this.theButton.x = this.sys.canvas.width / 4;
     }
+
     if (this.level === 4) {
       this.sounds.speak("positive-3");
       this.theButton.setScale(0.5);
@@ -99,6 +102,7 @@ export class MenuScene extends Phaser.Scene {
         repeat: -1,
       });
     }
+
     if (this.level === 5) {
       this.sounds.speak("positive-4");
       this.theButton.setScale(0.5);
@@ -116,53 +120,10 @@ export class MenuScene extends Phaser.Scene {
         cr.obj.angle = -90 + Math.random() * 180;
       }
     }
+
     if (this.level === 6) {
       this.sounds.speak("positive-5");
-      for (const cr of this.crawlers) {
-        tweenPromise(this, {
-          targets: cr.obj,
-          y: this.sys.canvas.height * 2,
-          x: 0,
-          duration: 800,
-          angle: -90,
-        });
-      }
-      const fakeImages: Set<Phaser.GameObjects.Image> = new Set();
-      const x0 = this.sys.canvas.width * 0.2;
-      const y0 = this.sys.canvas.height * 0.33;
-      const ygap = this.sys.canvas.height * 0.2;
-      const xgap = this.sys.canvas.width * 0.2;
-      this.theButton.setScale(0.5);
-      this.theButton.x = -1000;
-      this.theButton.y = -1000;
-      const xcount = 4;
-      const ycount = 3;
-      for (let i = 0; i < ycount; i++) {
-        for (let j = 0; j < xcount; j++) {
-          const scene = this;
-          (function () {
-            const image = scene.add.image(
-              x0 + j * xgap,
-              y0 + i * ygap,
-              "button"
-            );
-            fakeImages.add(image);
-            image.setScale(0.5);
-            image.setInteractive();
-            image.on("pointerdown", function () {
-              image.alpha = 0;
-              fakeImages.delete(image);
-              if (fakeImages.size === 1) {
-                // the last one is the real one
-                const [lastImage] = fakeImages;
-                scene.theButton.x = lastImage.x;
-                scene.theButton.y = lastImage.y;
-                lastImage.destroy();
-              }
-            });
-          })();
-        }
-      }
+      this.level6();
     }
 
     if (this.level === 7) {
@@ -173,6 +134,52 @@ export class MenuScene extends Phaser.Scene {
     }
     if (this.level === 9) {
       this.sounds.speak("positive-8");
+    }
+  }
+
+  level6() {
+    // grid of fake buttons you must click
+    for (const cr of this.crawlers) {
+      tweenPromise(this, {
+        targets: cr.obj,
+        y: this.sys.canvas.height * 2,
+        x: 0,
+        duration: 800,
+        angle: -90,
+      });
+    }
+    const fakeImages: Set<Phaser.GameObjects.Image> = new Set();
+    const x0 = this.sys.canvas.width * 0.2;
+    const y0 = this.sys.canvas.height * 0.33;
+    const ygap = this.sys.canvas.height * 0.2;
+    const xgap = this.sys.canvas.width * 0.2;
+    this.theButton.setScale(0.5);
+    this.theButton.x = -1000;
+    this.theButton.y = -1000;
+    const xcount = 4;
+    const ycount = 3;
+    for (let i = 0; i < ycount; i++) {
+      for (let j = 0; j < xcount; j++) {
+        const scene = this;
+        (function () {
+          const image = scene.add.image(x0 + j * xgap, y0 + i * ygap, "button");
+          fakeImages.add(image);
+          image.setScale(0.5);
+          image.setInteractive();
+          image.on("pointerdown", function () {
+            image.alpha = 0;
+            image.destroy();
+            fakeImages.delete(image);
+            if (fakeImages.size === 1) {
+              // the last one is the real one
+              const [lastImage] = fakeImages;
+              scene.theButton.x = lastImage.x;
+              scene.theButton.y = lastImage.y;
+              lastImage.destroy();
+            }
+          });
+        })();
+      }
     }
   }
 

@@ -84,6 +84,7 @@ export class MenuScene extends Phaser.Scene {
     }
     if (this.level === 4) {
       this.sounds.speak("positive-3");
+      this.theButton.setScale(0.5);
       await tweenPromise(this, {
         targets: this.theButton,
         x: this.sys.canvas.width * 0.8,
@@ -100,6 +101,7 @@ export class MenuScene extends Phaser.Scene {
     }
     if (this.level === 5) {
       this.sounds.speak("positive-4");
+      this.theButton.setScale(0.5);
       this.tweens.killTweensOf(this.theButton);
       await tweenPromise(this, {
         targets: this.theButton,
@@ -124,6 +126,42 @@ export class MenuScene extends Phaser.Scene {
           duration: 800,
           angle: -90,
         });
+      }
+      const fakeImages: Set<Phaser.GameObjects.Image> = new Set();
+      const x0 = this.sys.canvas.width * 0.2;
+      const y0 = this.sys.canvas.height * 0.33;
+      const ygap = this.sys.canvas.height * 0.2;
+      const xgap = this.sys.canvas.width * 0.2;
+      this.theButton.setScale(0.5);
+      this.theButton.x = -1000;
+      this.theButton.y = -1000;
+      const xcount = 4;
+      const ycount = 3;
+      for (let i = 0; i < ycount; i++) {
+        for (let j = 0; j < xcount; j++) {
+          const scene = this;
+          (function () {
+            const image = scene.add.image(
+              x0 + j * xgap,
+              y0 + i * ygap,
+              "button"
+            );
+            fakeImages.add(image);
+            image.setScale(0.5);
+            image.setInteractive();
+            image.on("pointerdown", function () {
+              image.alpha = 0;
+              fakeImages.delete(image);
+              if (fakeImages.size === 1) {
+                // the last one is the real one
+                const [lastImage] = fakeImages;
+                scene.theButton.x = lastImage.x;
+                scene.theButton.y = lastImage.y;
+                lastImage.destroy();
+              }
+            });
+          })();
+        }
       }
     }
 

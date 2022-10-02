@@ -7,7 +7,7 @@ import { sampleOne } from "./myphaser";
 
 const key1 = "sounds";
 
-type SfxNames = keyof typeof sfx.spritemap;
+export type SfxNames = keyof typeof sfx.spritemap;
 let musicEverStarted = false;
 
 export function marker(soundName: SfxNames) {

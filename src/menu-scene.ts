@@ -3,9 +3,9 @@ import particleUrl from "../assets/images/smoke.png";
 import buttonPngUrl from "../assets/images/button.png";
 import buttonJsonUrl from "../assets/images/button.json";
 import gaspUrl from "../assets/sfx/gasp.mp3";
-import { tweenPromise } from "./myphaser";
+import { sampleOne, tweenPromise } from "./myphaser";
 import { Crawler } from "./crawler";
-import { Sounds } from "./sounds";
+import { SfxNames, Sounds } from "./sounds";
 import { LoadBar } from "./load-bar";
 import { SlipperyButton } from "./slippery-button";
 
@@ -18,6 +18,7 @@ export class MenuScene extends Phaser.Scene {
   private lastPressTime = new Date();
   private countdownText!: Phaser.GameObjects.Text;
   // private cohortText!: Phaser.GameObjects.Text;
+  private cohort = "";
   private crawlers!: Crawler[];
 
   constructor() {
@@ -29,7 +30,7 @@ export class MenuScene extends Phaser.Scene {
   preload(): void {
     if (import.meta.env.DEV) {
       // which level do you want to work on now?
-      this.level = 8;
+      this.level = 1;
       console.log("this.evel", this.level);
     }
     new LoadBar(this);
@@ -71,6 +72,15 @@ export class MenuScene extends Phaser.Scene {
     this.countdownText.alpha = 1.0;
   }
 
+  speakByCohort(index: number) {
+    if (this.cohort.length === 0) {
+      console.log("bugged out speakByCohort no cohort");
+      return;
+    }
+    const soundKey = (this.cohort + "-" + index) as SfxNames;
+    this.sounds.speak(soundKey);
+  }
+
   async setupNextLevel() {
     this.lastPressTime = new Date();
 
@@ -81,20 +91,20 @@ export class MenuScene extends Phaser.Scene {
     }
 
     if (this.level === 2) {
-      this.sounds.speak("positive-1");
+      this.speakByCohort(1);
       this.theButton.setScale(1.0);
       // this.music.play();
       this.sounds.playMusic();
     }
 
     if (this.level === 3) {
-      this.sounds.speak("positive-2");
+      this.speakByCohort(2);
       this.theButton.setScale(0.5);
       this.theButton.x = this.sys.canvas.width / 4;
     }
 
     if (this.level === 4) {
-      this.sounds.speak("positive-3");
+      this.speakByCohort(3);
       this.theButton.setScale(0.5);
       await tweenPromise(this, {
         targets: this.theButton,
@@ -112,7 +122,7 @@ export class MenuScene extends Phaser.Scene {
     }
 
     if (this.level === 5) {
-      this.sounds.speak("positive-4");
+      this.speakByCohort(4);
       this.theButton.setScale(0.5);
       this.tweens.killTweensOf(this.theButton);
       await tweenPromise(this, {
@@ -131,13 +141,13 @@ export class MenuScene extends Phaser.Scene {
     }
 
     if (this.level === 6) {
-      this.sounds.speak("positive-5");
+      this.speakByCohort(5);
       this.crawlersGoAway();
       this.level6();
     }
 
     if (this.level === 7) {
-      this.sounds.speak("positive-6");
+      this.speakByCohort(6);
       this.theButton.setScale(0.5);
       this.theButton.alpha = 0;
       const slipper = new SlipperyButton(this, () => {
@@ -149,7 +159,7 @@ export class MenuScene extends Phaser.Scene {
       console.log(slipper.obj.x, slipper.obj.y);
     }
     if (this.level === 8) {
-      this.sounds.speak("positive-7");
+      this.speakByCohort(7);
       this.theButton.setScale(0.5);
       this.tweens.killTweensOf(this.theButton);
       await tweenPromise(this, {
@@ -169,7 +179,7 @@ export class MenuScene extends Phaser.Scene {
       }
     }
     if (this.level === 9) {
-      this.sounds.speak("positive-8");
+      this.speakByCohort(8);
       this.crawlersGoAway();
     }
   }
@@ -262,8 +272,10 @@ export class MenuScene extends Phaser.Scene {
     });
     this.setupNextLevel();
 
+    this.cohort = sampleOne(["positive", "sociopath"]);
+    const cohortCode = this.cohort.slice(0, 2).toUpperCase();
     // this.cohortText =
-    this.add.text(0, 0, "Welcome to cohort alpha", {
+    this.add.text(0, 0, "Welcome to cohort " + cohortCode, {
       fontSize: "60px",
       fontFamily: "Helvetica",
     });

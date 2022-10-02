@@ -6,6 +6,7 @@ import gaspUrl from "../assets/sfx/gasp.mp3";
 import { Music } from "./music";
 import { tweenPromise } from "./myphaser";
 import { Crawler } from "./crawler";
+import { Sounds } from "./sounds";
 
 export class MenuScene extends Phaser.Scene {
   private startKey!: Phaser.Input.Keyboard.Key;
@@ -13,6 +14,7 @@ export class MenuScene extends Phaser.Scene {
   private level = 1;
   private theButton!: Phaser.GameObjects.Sprite;
   private music!: Music;
+  private sounds!: Sounds;
   private lastPressTime = new Date();
   private countdownText!: Phaser.GameObjects.Text;
   private crawlers!: Crawler[];
@@ -37,6 +39,7 @@ export class MenuScene extends Phaser.Scene {
       atlasURL: buttonJsonUrl,
     });
 
+    this.sounds = new Sounds(this);
     this.music = new Music(this);
     this.music.preload();
     this.crawlers = [
@@ -148,10 +151,11 @@ export class MenuScene extends Phaser.Scene {
       .setDepth(1);
     this.theButton.setInteractive();
     this.theButton.on("pointerdown", () => {
-      console.log("down");
+      this.sounds.playClickDown();
       this.theButton.setFrame(1);
     });
     this.theButton.on("pointerup", () => {
+      this.sounds.playClickUp();
       this.theButton.setFrame(0);
       this.beatLevel();
     });

@@ -8,3 +8,8 @@ export function tweenPromise(
     scene.tweens.add(config);
   });
 }
+
+export function sampleOne<Type>(arr: Type[]): Type {
+  // https://stackoverflow.com/questions/4550505/getting-a-random-value-from-a-javascript-array
+  return arr[Math.floor(Math.random() * arr.length)];
+}

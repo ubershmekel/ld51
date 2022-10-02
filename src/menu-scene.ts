@@ -7,6 +7,7 @@ import { tweenPromise } from "./myphaser";
 import { Crawler } from "./crawler";
 import { Sounds } from "./sounds";
 import { LoadBar } from "./load-bar";
+import { SlipperyButton } from "./slippery-button";
 
 export class MenuScene extends Phaser.Scene {
   private startKey!: Phaser.Input.Keyboard.Key;
@@ -16,6 +17,7 @@ export class MenuScene extends Phaser.Scene {
   private sounds!: Sounds;
   private lastPressTime = new Date();
   private countdownText!: Phaser.GameObjects.Text;
+  // private cohortText!: Phaser.GameObjects.Text;
   private crawlers!: Crawler[];
 
   constructor() {
@@ -128,6 +130,15 @@ export class MenuScene extends Phaser.Scene {
 
     if (this.level === 7) {
       this.sounds.speak("positive-6");
+      this.theButton.setScale(0.5);
+      this.theButton.alpha = 0;
+      const slipper = new SlipperyButton(this, () => {
+        this.theButton.alpha = 1;
+        this.theButton.x = slipper.obj.x;
+        this.theButton.y = slipper.obj.y;
+      });
+      slipper.create();
+      console.log(slipper.obj.x, slipper.obj.y);
     }
     if (this.level === 8) {
       this.sounds.speak("positive-7");
@@ -196,14 +207,6 @@ export class MenuScene extends Phaser.Scene {
       cr.obj.x = 2 * this.sys.canvas.width;
     }
 
-    // const button = this.anims.createFromAseprite("button");
-    // window.debugr = this.add.rectangle(
-    //   this.sys.canvas.width * 0.5,
-    //   this.sys.canvas.height * 0.5,
-    //   this.sys.canvas.width * 0.5,
-    //   this.sys.canvas.height * 0.5,
-    //   0x00ff00
-    // );
     this.theButton = this.add
       .sprite(this.sys.canvas.width, this.sys.canvas.height, "button")
       .setDepth(1);
@@ -218,9 +221,8 @@ export class MenuScene extends Phaser.Scene {
       this.beatLevel();
     });
     this.setupNextLevel();
-    // .play({ key: 0, repeat: -1 })
-    // .setScale(6);
 
+    // this.cohortText =
     this.add.text(0, 0, "Welcome to cohort alpha", {
       fontSize: "60px",
       fontFamily: "Helvetica",
@@ -248,6 +250,21 @@ export class MenuScene extends Phaser.Scene {
       image.setBlendMode(Phaser.BlendModes.ADD);
       this.sprites.push({ s: image, r: 1 + Math.random() * 2 });
     }
+
+    //   const bounds = this.cohortText.getBounds();
+    //   window.debugr = this.add
+    //     .rectangle(
+    //       bounds.centerX,
+    //       bounds.centerY,
+    //       bounds.width,
+    //       bounds.height,
+    //       // this.sys.canvas.width * 0.5,
+    //       // this.sys.canvas.height * 0.5,
+    //       // this.sys.canvas.width * 0.5,
+    //       // this.sys.canvas.height * 0.5,
+    //       0x00ff00
+    //     )
+    //     .setAlpha(0.5);
   }
 
   update(): void {

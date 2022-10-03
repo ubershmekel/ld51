@@ -11,6 +11,7 @@ import "./style.css";
 import "phaser";
 import { MenuScene } from "./menu-scene";
 import * as consts from "./consts";
+import { EndScene } from "./end-scene";
 
 const GameConfig: Phaser.Types.Core.GameConfig = {
   title: "ExampleGame",
@@ -20,7 +21,7 @@ const GameConfig: Phaser.Types.Core.GameConfig = {
   height: consts.height,
   type: Phaser.AUTO,
   parent: "app",
-  scene: [MenuScene],
+  scene: [MenuScene, EndScene],
   input: {
     keyboard: true,
   },

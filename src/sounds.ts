@@ -52,6 +52,10 @@ export class Sounds {
     this.speaker.play(soundName);
   }
 
+  stopSpeak() {
+    this.speaker.stop();
+  }
+
   playClickUp() {
     const keys: SfxNames[] = ["click-up1", "click-up2", "click-up3"];
     this.play(sampleOne(keys));

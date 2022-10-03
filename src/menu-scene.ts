@@ -10,6 +10,10 @@ import { LoadBar } from "./load-bar";
 import { SlipperyButton } from "./slippery-button";
 import { DialogBox } from "./dialog-box";
 import { voiceData, CohortName } from "./voice-lines";
+import { endSceneKey, ScoreData } from "./end-scene";
+import { levelCount } from "./consts";
+
+export const menuSceneKey = "MenuScene";
 
 export class MenuScene extends Phaser.Scene {
   private sprites: { s: Phaser.GameObjects.Image; r: number }[] = [];
@@ -24,10 +28,11 @@ export class MenuScene extends Phaser.Scene {
   private dialogBox!: DialogBox;
   private isTimeTicking = false;
   private isButtonLive = false;
+  private completionTimesMs!: number[];
 
   constructor() {
     super({
-      key: "MenuScene",
+      key: menuSceneKey,
     });
   }
 
@@ -35,7 +40,7 @@ export class MenuScene extends Phaser.Scene {
     if (import.meta.env.DEV) {
       // which level do you want to work on now?
       this.level = 1;
-      console.log("this.evel", this.level);
+      console.log("preload this.level", this.level);
     }
     new LoadBar(this);
     this.load.image("particle", particleUrl);
@@ -62,6 +67,11 @@ export class MenuScene extends Phaser.Scene {
   }
 
   async beatLevel() {
+    const duration = new Date().getTime() - this.lastPressTime.getTime();
+    if (this.level > 1) {
+      // no timing for level 1
+      this.completionTimesMs.push(duration);
+    }
     this.level += 1;
     this.startLevelDialog();
   }
@@ -94,16 +104,25 @@ export class MenuScene extends Phaser.Scene {
   }
 
   startLevelDialog() {
+    // Just finished a level, now start the next dialog line
+    // `this.level` already has the value for the new level
+    // that's about to start.
     if (this.level === 1) {
       // first level is just the big button
       return;
     }
+    if (this.level > levelCount) {
+      this.gameOver();
+      return;
+    }
+
     this.speakByCohort(this.level - 1);
   }
 
   async setupNextLevel() {
     if (this.level === 1) {
       // Big red button, just waiting for you to click it
+      this.completionTimesMs = [];
       this.theButton.x = this.sys.canvas.width / 2;
       this.theButton.y = this.sys.canvas.height / 2;
       this.theButton.setScale(2);
@@ -113,7 +132,6 @@ export class MenuScene extends Phaser.Scene {
 
     if (this.level === 2) {
       this.theButton.setScale(1.0);
-      // this.music.play();
       this.sounds.playMusic();
     }
 
@@ -251,7 +269,18 @@ export class MenuScene extends Phaser.Scene {
   youLose() {
     this.level = 1;
     this.sound.play("gasp");
-    this.scene.start(this);
+    // this.scene.start(this);
+    this.gameOver();
+  }
+
+  gameOver() {
+    // win or lose
+    this.sounds.stopSpeak();
+    const scoreCard: ScoreData = {
+      cohort: this.cohort,
+      timesMs: this.completionTimesMs,
+    };
+    this.scene.start(endSceneKey, scoreCard);
   }
 
   create(): void {

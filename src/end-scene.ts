@@ -1,11 +1,15 @@
 import { CloseButton } from "./close-button";
-import { levelCount } from "./consts";
+import { buttonImageKey, levelCount } from "./consts";
 import { DialogBox } from "./dialog-box";
 import { menuSceneKey } from "./menu-scene";
 import { SfxNames, Sounds } from "./sounds";
 import { Sparkler } from "./sparkler";
 import { CohortName, voiceData } from "./voice-lines";
+import smokeUrl from "../assets/images/smoke.png";
+import buttonPngUrl from "../assets/images/button.png";
+import buttonJsonUrl from "../assets/images/button.json";
 
+const smokeImageKey = "sparkler-image";
 export const endSceneKey = "end-screen";
 
 // const endScene = new Phaser.Scene(endSceneKey);
@@ -37,17 +41,26 @@ export class EndScene extends Phaser.Scene {
 
   preload() {
     console.log("preload scene");
-    Sparkler.preload(this);
-    this.sounds = new Sounds(this);
-    this.dialogBox = new DialogBox(this);
     CloseButton.preload(this);
+    this.load.aseprite({
+      key: buttonImageKey,
+      textureURL: buttonPngUrl,
+      atlasURL: buttonJsonUrl,
+    });
+    this.load.image(smokeImageKey, smokeUrl);
+    this.sounds = new Sounds(this);
   }
 
   create() {
+    this.dialogBox = new DialogBox(this);
     this.cameras.main.setBackgroundColor("#ffffff");
 
     this.sounds.create();
-    this.sparkler = new Sparkler(this);
+    this.sparkler = new Sparkler(
+      this,
+      smokeImageKey,
+      Sparkler.configSnowing(this)
+    );
     this.sparkler.setDepth(-1);
     this.sparkler.start();
     this.sparkler.setPos(
@@ -72,6 +85,12 @@ export class EndScene extends Phaser.Scene {
     }
 
     this.sayEndLine();
+
+    if (this.isWin()) {
+      const gush = new Sparkler(this, buttonImageKey, Sparkler.configGush());
+      gush.setPos(this.sys.canvas.width * 0.5, this.sys.canvas.height * 1.0);
+      gush.start();
+    }
   }
 
   sayEndLine() {

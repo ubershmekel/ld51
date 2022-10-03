@@ -1,3 +1,4 @@
+import { buttonImageKey } from "./consts";
 import { tweenPromise } from "./myphaser";
 
 export class SlipperyButton {
@@ -15,7 +16,7 @@ export class SlipperyButton {
       .sprite(
         this.scene.sys.canvas.width / 2,
         this.scene.sys.canvas.height / 2,
-        "button"
+        buttonImageKey
       )
       .setDepth(3);
     this.obj.setScale(0.5);

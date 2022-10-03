@@ -11,7 +11,7 @@ import { SlipperyButton } from "./slippery-button";
 import { DialogBox } from "./dialog-box";
 import { voiceData, CohortName } from "./voice-lines";
 import { endSceneKey, ScoreData } from "./end-scene";
-import { levelCount } from "./consts";
+import { buttonImageKey, levelCount } from "./consts";
 
 export const menuSceneKey = "MenuScene";
 
@@ -47,7 +47,7 @@ export class MenuScene extends Phaser.Scene {
     this.load.audio("gasp", gaspUrl);
 
     this.load.aseprite({
-      key: "button",
+      key: buttonImageKey,
       textureURL: buttonPngUrl,
       atlasURL: buttonJsonUrl,
     });
@@ -245,7 +245,11 @@ export class MenuScene extends Phaser.Scene {
       for (let j = 0; j < xcount; j++) {
         const scene = this;
         (function () {
-          const image = scene.add.image(x0 + j * xgap, y0 + i * ygap, "button");
+          const image = scene.add.image(
+            x0 + j * xgap,
+            y0 + i * ygap,
+            buttonImageKey
+          );
           fakeImages.add(image);
           image.setScale(0.5);
           image.setInteractive();
@@ -310,7 +314,7 @@ export class MenuScene extends Phaser.Scene {
     }
 
     this.theButton = this.add
-      .sprite(this.sys.canvas.width, this.sys.canvas.height, "button")
+      .sprite(this.sys.canvas.width, this.sys.canvas.height, buttonImageKey)
       .setDepth(1);
     this.theButton.setInteractive();
     // `armed` concept is for when we transition back to this button

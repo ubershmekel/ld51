@@ -120,18 +120,18 @@ export class EndScene extends Phaser.Scene {
       .setDepth(2);
     console.log("sccore data", this.scoreData);
 
-    let lines = [`Experiment report, control group "${this.scoreData.cohort}"`];
+    let lines = [`Report for control group "${this.scoreData.cohort}"`];
     let totalTime = 0;
     for (let i = 0; i < this.scoreData.timesMs.length; i++) {
       const seconds = this.scoreData.timesMs[i] / 1000;
       totalTime += seconds;
-      lines.push(`Level ${i + 1}: ${seconds} seconds`);
+      lines.push(`Experiment ${i + 1}: ${seconds} seconds`);
     }
 
     // `-1` because level 1 is actually the buton without a timer
     if (!this.isWin()) {
       const failedLevelIndex = this.scoreData.timesMs.length + 1;
-      lines.push(`Level ${failedLevelIndex}: ???`);
+      lines.push(`Experiment ${failedLevelIndex}: ???`);
     }
     if (this.scoreData.timesMs.length > 0) {
       lines.push(`Total: ${totalTime.toFixed(3)} seconds`);

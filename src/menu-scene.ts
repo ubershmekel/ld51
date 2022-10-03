@@ -46,6 +46,7 @@ export class MenuScene extends Phaser.Scene {
   private completionTimesMs!: number[];
   private rock!: Rock;
   private cleanUpLevel?: Function;
+  private levelText!: Phaser.GameObjects.Text;
 
   constructor() {
     super({
@@ -97,7 +98,16 @@ export class MenuScene extends Phaser.Scene {
       });
     }
     this.level += 1;
+    this.updateLevelText();
     this.startLevelDialog();
+  }
+
+  updateLevelText() {
+    this.levelText.text = "Experiment #" + (this.level - 1);
+    if (this.level === 1) {
+      this.levelText.text =
+        "Control group CG-" + this.cohort.toUpperCase() + "-01";
+    }
   }
 
   speakByCohort(index: number) {
@@ -466,11 +476,16 @@ export class MenuScene extends Phaser.Scene {
     // const cohortCode = this.cohort.slice(0, 2).toUpperCase();
     // set up the first level which is just the first big red button
     // this.setupLevel();
-    // this.cohortText =
-    // this.add.text(10, 0, "Welcome to control group " + cohortCode, {
-    //   fontSize: "60px",
-    //   fontFamily: "Helvetica",
-    // });
+    this.levelText = this.add.text(
+      this.sys.canvas.width * 0.01,
+      this.sys.canvas.height * 0.95,
+      "",
+      {
+        fontSize: "20px",
+        fontFamily: "Monospace",
+      }
+    );
+    this.updateLevelText();
 
     this.countdownText = this.add
       .text(this.sys.canvas.width / 2, this.sys.canvas.height - 60, "10.0", {

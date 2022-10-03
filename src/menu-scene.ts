@@ -12,6 +12,7 @@ import { DialogBox } from "./dialog-box";
 import { voiceData, CohortName } from "./voice-lines";
 import { endSceneKey, ScoreData } from "./end-scene";
 import { buttonImageKey, levelCount } from "./consts";
+import { Rock } from "./rock";
 
 export const menuSceneKey = "MenuScene";
 
@@ -29,6 +30,8 @@ export class MenuScene extends Phaser.Scene {
   private isTimeTicking = false;
   private isButtonLive = false;
   private completionTimesMs!: number[];
+  private rock!: Rock;
+  private cleanUpLevel?: Function;
 
   constructor() {
     super({
@@ -38,13 +41,14 @@ export class MenuScene extends Phaser.Scene {
 
   preload(): void {
     if (import.meta.env.DEV) {
-      // which level do you want to work on now?
-      this.level = 1;
+      // which level do you want to debug and work on now?
+      this.level = 8;
       console.log("preload this.level", this.level);
     }
     new LoadBar(this);
     this.load.image("particle", particleUrl);
     this.load.audio("gasp", gaspUrl);
+    this.rock = new Rock(this);
 
     this.load.aseprite({
       key: buttonImageKey,
@@ -66,7 +70,7 @@ export class MenuScene extends Phaser.Scene {
     DialogBox.preload(this);
   }
 
-  async beatLevel() {
+  async goToNextLevel() {
     const duration = new Date().getTime() - this.lastPressTime.getTime();
     if (this.level > 1) {
       // no timing for level 1
@@ -93,6 +97,8 @@ export class MenuScene extends Phaser.Scene {
     this.isTimeTicking = true;
     this.isButtonLive = true;
     this.lastPressTime = new Date();
+    // `setupLevel` must be last because some levels disable `isButtonLive`
+    this.setupLevel();
     await this.tweens.add({
       targets: this.countdownText,
       alpha: 0,
@@ -108,7 +114,7 @@ export class MenuScene extends Phaser.Scene {
     // `this.level` already has the value for the new level
     // that's about to start.
     if (this.level === 1) {
-      // first level is just the big button
+      // first level is just the big button, no dialog
       return;
     }
     if (this.level > levelCount) {
@@ -119,10 +125,20 @@ export class MenuScene extends Phaser.Scene {
     this.speakByCohort(this.level - 1);
   }
 
-  async setupNextLevel() {
+  async setupLevel() {
+    console.log("setupLevel", this.level);
+    if (this.cleanUpLevel) {
+      this.cleanUpLevel();
+      this.cleanUpLevel = undefined;
+    }
+
+    if (this.level > 1) {
+      // only level 1 does not start with music
+      this.sounds.playMusic();
+    }
+
     if (this.level === 1) {
       // Big red button, just waiting for you to click it
-      this.completionTimesMs = [];
       this.theButton.x = this.sys.canvas.width / 2;
       this.theButton.y = this.sys.canvas.height / 2;
       this.theButton.setScale(2);
@@ -132,7 +148,6 @@ export class MenuScene extends Phaser.Scene {
 
     if (this.level === 2) {
       this.theButton.setScale(1.0);
-      this.sounds.playMusic();
     }
 
     if (this.level === 3) {
@@ -173,14 +188,26 @@ export class MenuScene extends Phaser.Scene {
         cr.obj.angle = -90 + Math.random() * 180;
         cr.isHoming = false;
       }
+      this.cleanUpLevel = this.crawlersGoAway;
     }
 
     if (this.level === 6) {
-      this.crawlersGoAway();
-      this.level6();
+      const cliffCleaner = this.cliffRockLevel();
+      this.isButtonLive = false;
+      const originalTimeX = this.countdownText.x;
+      this.countdownText.x = this.sys.canvas.width * 0.2;
+      this.cleanUpLevel = () => {
+        this.isButtonLive = true;
+        this.countdownText.x = originalTimeX;
+        cliffCleaner();
+      };
     }
 
     if (this.level === 7) {
+      this.levelFakeGrid();
+    }
+
+    if (this.level === 8) {
       this.theButton.setScale(0.5);
       this.theButton.alpha = 0;
       const slipper = new SlipperyButton(this, () => {
@@ -191,7 +218,8 @@ export class MenuScene extends Phaser.Scene {
       slipper.create();
       console.log(slipper.obj.x, slipper.obj.y);
     }
-    if (this.level === 8) {
+
+    if (this.level === 9) {
       this.theButton.setScale(0.5);
       this.tweens.killTweensOf(this.theButton);
       await tweenPromise(this, {
@@ -209,10 +237,61 @@ export class MenuScene extends Phaser.Scene {
         cr.homingY = this.theButton.y;
         cr.isHoming = true;
       }
+      this.cleanUpLevel = this.crawlersGoAway;
     }
-    if (this.level === 9) {
-      this.crawlersGoAway();
+
+    if (this.level > levelCount) {
+      console.error("no level 9 yet");
     }
+  }
+
+  cliffRockLevel() {
+    this.rock.create();
+    this.theButton.scale = 0.5;
+    this.theButton.x = this.sys.canvas.width * 0.6;
+    this.theButton.y = this.sys.canvas.height * 0.9;
+    const padding = 20;
+    const glass = this.add
+      .rectangle(
+        this.theButton.x,
+        this.theButton.y,
+        this.theButton.displayWidth + 2 * padding,
+        this.theButton.displayHeight + 2 * padding,
+        0x8888ff
+      )
+      .setAlpha(0.5)
+      .setDepth(5);
+
+    const rect = Phaser.Geom.Rectangle.FromXY(
+      this.sys.canvas.width,
+      this.rock.obj.y,
+      this.rock.obj.x - 30,
+      this.sys.canvas.height
+    );
+    const cliff = this.add
+      .rectangle(rect.centerX, rect.centerY, rect.width, rect.height, 0x553822)
+      .setDepth(5);
+
+    this.rock.onDone = async () => {
+      this.rock.obj.setInteractive(false);
+      await tweenPromise(this, {
+        targets: this.rock.obj,
+        x: "-= 80",
+        y: this.theButton.y,
+        ease: "Cubic.easeIn",
+        duration: 400,
+      });
+
+      this.theButton.setFrame(1);
+      this.sounds.playClickUp();
+      this.goToNextLevel();
+    };
+
+    return () => {
+      cliff.destroy();
+      glass.destroy();
+      this.rock.obj.destroy();
+    };
   }
 
   crawlersGoAway() {
@@ -229,7 +308,7 @@ export class MenuScene extends Phaser.Scene {
     }
   }
 
-  level6() {
+  levelFakeGrid() {
     // grid of fake buttons you must click
     const fakeImages: Set<Phaser.GameObjects.Image> = new Set();
     const x0 = this.sys.canvas.width * 0.2;
@@ -272,7 +351,7 @@ export class MenuScene extends Phaser.Scene {
 
   youLose() {
     this.level = 1;
-    this.sound.play("gasp");
+    // this.sound.play("gasp");
     // this.scene.start(this);
     this.gameOver();
   }
@@ -297,9 +376,9 @@ export class MenuScene extends Phaser.Scene {
       });
     }
 
+    this.completionTimesMs = [];
     this.dialogBox = new DialogBox(this);
     this.dialogBox.onDismiss = () => {
-      this.setupNextLevel();
       this.startTheLevel();
     };
     this.dialogBox.onShow = () => {
@@ -340,13 +419,13 @@ export class MenuScene extends Phaser.Scene {
       }
       this.sounds.playClickUp();
       this.theButton.setFrame(0);
-      this.beatLevel();
+      this.goToNextLevel();
     });
 
     this.cohort = sampleOne(["positive", "sociopath", "negative"]);
     // const cohortCode = this.cohort.slice(0, 2).toUpperCase();
     // set up the first level which is just the first big red button
-    this.setupNextLevel();
+    // this.setupLevel();
     // this.cohortText =
     // this.add.text(10, 0, "Welcome to control group " + cohortCode, {
     //   fontSize: "60px",
@@ -374,6 +453,12 @@ export class MenuScene extends Phaser.Scene {
       image.alpha = 0.1;
       image.setBlendMode(Phaser.BlendModes.ADD);
       this.sprites.push({ s: image, r: 1 + Math.random() * 2 });
+    }
+
+    if (this.level === 1) {
+      this.startTheLevel();
+    } else {
+      this.startLevelDialog();
     }
 
     //   const bounds = this.cohortText.getBounds();

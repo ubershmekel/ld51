@@ -59,6 +59,7 @@ export class DialogBox {
       style: {
         wordWrap: { width: gameWidth - config.margin * 2 - 25 },
         fontSize: "36px",
+        fontStyle: "bold",
       },
     });
     sceneText.setScrollFactor(0);
@@ -174,6 +175,7 @@ export class DialogBox {
   }
 
   skipDialogAnim(): Promise<void> {
+    console.log("skipDialogAnim");
     if (this.targetText === this.sceneText.text) {
       // dismiss
       if (this.resolver) {

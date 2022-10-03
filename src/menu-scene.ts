@@ -14,6 +14,9 @@ import { endSceneKey, ScoreData } from "./end-scene";
 import { buttonImageKey, levelCount } from "./consts";
 import { Rock } from "./rock";
 
+// @ts-ignore
+import BasicAnalytics from "@basic-analytics/sdk";
+
 export const menuSceneKey = "MenuScene";
 
 const cohorts: CohortName[] = [
@@ -88,6 +91,10 @@ export class MenuScene extends Phaser.Scene {
     if (this.level > 1) {
       // no timing for level 1
       this.completionTimesMs.push(duration);
+      BasicAnalytics.sendEvent({
+        key: "goToNextLevel",
+        jv: JSON.stringify(this.getScoreData()),
+      });
     }
     this.level += 1;
     this.startLevelDialog();
@@ -233,6 +240,7 @@ export class MenuScene extends Phaser.Scene {
     }
 
     if (this.level === 9) {
+      // homing bugs
       this.theButton.setScale(0.5);
       this.tweens.killTweensOf(this.theButton);
       await tweenPromise(this, {
@@ -369,17 +377,20 @@ export class MenuScene extends Phaser.Scene {
     this.gameOver();
   }
 
-  gameOver() {
-    // win or lose
-    this.sounds.stopSpeak();
-    const scoreCard: ScoreData = {
+  getScoreData(): ScoreData {
+    return {
       cohort: this.cohort,
       timesMs: this.completionTimesMs,
     };
+  }
+
+  gameOver() {
+    // win or lose
+    this.sounds.stopSpeak();
     if (this.cleanUpLevel) {
       this.cleanUpLevel = undefined;
     }
-    this.scene.start(endSceneKey, scoreCard);
+    this.scene.start(endSceneKey, this.getScoreData());
   }
 
   create(): void {
@@ -477,6 +488,11 @@ export class MenuScene extends Phaser.Scene {
     } else {
       this.startLevelDialog();
     }
+
+    BasicAnalytics.sendEvent({
+      key: "create",
+      jv: JSON.stringify(this.getScoreData()),
+    });
 
     //   const bounds = this.cohortText.getBounds();
     //   window.debugr = this.add

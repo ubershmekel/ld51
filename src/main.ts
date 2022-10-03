@@ -54,3 +54,16 @@ window.addEventListener("load", () => {
   // Expose `_game` to allow debugging, mute button and fullscreen button
   (window as any)._game = new Game(GameConfig);
 });
+
+// @ts-ignore
+import BasicAnalytics from "@basic-analytics/sdk";
+
+// import * as BasicAnalytics from "@basic-analytics/sdk";
+
+let apiBase = "https://basicanalytics.tagsyo.com";
+
+BasicAnalytics.init({
+  apiBase,
+});
+
+BasicAnalytics.sendEvent({ key: "pageview" });

@@ -19,7 +19,7 @@ export class SlipperyButton {
         buttonImageKey
       )
       .setDepth(3);
-    this.obj.setScale(0.5);
+    this.obj.setScale(0.6);
     this.obj.setInteractive();
 
     const radius = this.obj.displayWidth * 0.5;

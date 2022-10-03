@@ -55,6 +55,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   preload(): void {
+    console.log("preloading menu scene", this.level);
     if (import.meta.env.DEV) {
       // which level do you want to debug and work on now?
       this.level = 1;
@@ -391,6 +392,7 @@ export class MenuScene extends Phaser.Scene {
       this.cleanUpLevel = undefined;
     }
     this.scene.start(endSceneKey, this.getScoreData());
+    this.level = 1;
   }
 
   create(): void {

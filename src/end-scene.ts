@@ -40,7 +40,7 @@ export class EndScene extends Phaser.Scene {
   }
 
   preload() {
-    console.log("preload scene");
+    console.log("preload", endSceneKey);
     CloseButton.preload(this);
     this.load.aseprite({
       key: buttonImageKey,
@@ -143,6 +143,7 @@ export class EndScene extends Phaser.Scene {
     this.closeButton.obj.setDepth(scoreText.depth + 1);
     this.closeButton.obj.setInteractive();
     this.closeButton.obj.on("pointerdown", () => {
+      console.log("going to menu scene");
       this.sounds.stopSpeak();
       this.scene.start(menuSceneKey);
     });

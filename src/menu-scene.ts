@@ -16,8 +16,17 @@ import { Rock } from "./rock";
 
 export const menuSceneKey = "MenuScene";
 
-const cohorts: CohortName[] = ["positive", "sociopath", "negative"];
+const cohorts: CohortName[] = [
+  "positive",
+  "sociopath",
+  "hot",
+  "threat",
+  "negative",
+];
 let cohortIndex = Math.floor(Math.random() * cohorts.length);
+if (cohorts.length !== Object.keys(voiceData).length) {
+  console.error("Invalid cohorts array");
+}
 
 export class MenuScene extends Phaser.Scene {
   private sprites: { s: Phaser.GameObjects.Image; r: number }[] = [];
@@ -74,6 +83,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   async goToNextLevel() {
+    this.sounds.playMusic();
     const duration = new Date().getTime() - this.lastPressTime.getTime();
     if (this.level > 1) {
       // no timing for level 1
@@ -366,6 +376,9 @@ export class MenuScene extends Phaser.Scene {
       cohort: this.cohort,
       timesMs: this.completionTimesMs,
     };
+    if (this.cleanUpLevel) {
+      this.cleanUpLevel = undefined;
+    }
     this.scene.start(endSceneKey, scoreCard);
   }
 

@@ -48,7 +48,7 @@ export class Crawler {
           tweenPromise(this.scene, {
             targets: this.obj,
             scale: 1.0,
-            duration: 3500,
+            duration: 3900,
             x: this.homingX,
             y: this.homingY,
           });

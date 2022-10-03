@@ -9,6 +9,7 @@ import { SfxNames, Sounds } from "./sounds";
 import { LoadBar } from "./load-bar";
 import { SlipperyButton } from "./slippery-button";
 import { DialogBox } from "./dialog-box";
+import { voiceData, CohortName } from "./voice-lines";
 
 export class MenuScene extends Phaser.Scene {
   private sprites: { s: Phaser.GameObjects.Image; r: number }[] = [];
@@ -18,7 +19,7 @@ export class MenuScene extends Phaser.Scene {
   private lastPressTime = new Date();
   private countdownText!: Phaser.GameObjects.Text;
   // private cohortText!: Phaser.GameObjects.Text;
-  private cohort = "";
+  private cohort: CohortName | "" = "";
   private crawlers!: Crawler[];
   private dialogBox!: DialogBox;
   private isTimeTicking = false;
@@ -62,16 +63,20 @@ export class MenuScene extends Phaser.Scene {
 
   async beatLevel() {
     this.level += 1;
-    this.setupNextLevel();
+    this.startLevelDialog();
   }
 
   speakByCohort(index: number) {
     if (this.cohort.length === 0) {
-      console.log("bugged out speakByCohort no cohort");
+      console.error("bugged out speakByCohort no cohort");
       return;
     }
+    const cohort = this.cohort as CohortName;
     const soundKey = (this.cohort + "-" + index) as SfxNames;
     this.sounds.speak(soundKey);
+    // `index - 1` because the voice lines start a `1` and the array index at `0`
+    this.dialogBox.setText(voiceData[cohort][index - 1]);
+    this.dialogBox.show();
   }
 
   async startTheLevel() {
@@ -88,6 +93,14 @@ export class MenuScene extends Phaser.Scene {
     this.countdownText.alpha = 1.0;
   }
 
+  startLevelDialog() {
+    if (this.level === 1) {
+      // first level is just the big button
+      return;
+    }
+    this.speakByCohort(this.level - 1);
+  }
+
   async setupNextLevel() {
     if (this.level === 1) {
       // Big red button, just waiting for you to click it
@@ -99,25 +112,17 @@ export class MenuScene extends Phaser.Scene {
     }
 
     if (this.level === 2) {
-      this.speakByCohort(1);
-      this.dialogBox.setText(
-        "Click the red button. Just so you’d know, every time you click the button hundreds of people will die, but you don’t know them. Exciting, isn’t it?"
-      );
-      this.dialogBox.show();
-
       this.theButton.setScale(1.0);
       // this.music.play();
       this.sounds.playMusic();
     }
 
     if (this.level === 3) {
-      this.speakByCohort(2);
       this.theButton.setScale(0.5);
       this.theButton.x = this.sys.canvas.width / 4;
     }
 
     if (this.level === 4) {
-      this.speakByCohort(3);
       this.theButton.setScale(0.5);
       await tweenPromise(this, {
         targets: this.theButton,
@@ -135,7 +140,6 @@ export class MenuScene extends Phaser.Scene {
     }
 
     if (this.level === 5) {
-      this.speakByCohort(4);
       this.theButton.setScale(0.5);
       this.tweens.killTweensOf(this.theButton);
       await tweenPromise(this, {
@@ -154,13 +158,11 @@ export class MenuScene extends Phaser.Scene {
     }
 
     if (this.level === 6) {
-      this.speakByCohort(5);
       this.crawlersGoAway();
       this.level6();
     }
 
     if (this.level === 7) {
-      this.speakByCohort(6);
       this.theButton.setScale(0.5);
       this.theButton.alpha = 0;
       const slipper = new SlipperyButton(this, () => {
@@ -172,7 +174,6 @@ export class MenuScene extends Phaser.Scene {
       console.log(slipper.obj.x, slipper.obj.y);
     }
     if (this.level === 8) {
-      this.speakByCohort(7);
       this.theButton.setScale(0.5);
       this.tweens.killTweensOf(this.theButton);
       await tweenPromise(this, {
@@ -192,7 +193,6 @@ export class MenuScene extends Phaser.Scene {
       }
     }
     if (this.level === 9) {
-      this.speakByCohort(8);
       this.crawlersGoAway();
     }
   }
@@ -266,6 +266,7 @@ export class MenuScene extends Phaser.Scene {
 
     this.dialogBox = new DialogBox(this);
     this.dialogBox.onDismiss = () => {
+      this.setupNextLevel();
       this.startTheLevel();
     };
     this.dialogBox.onShow = () => {
@@ -298,10 +299,11 @@ export class MenuScene extends Phaser.Scene {
       this.theButton.setFrame(0);
       this.beatLevel();
     });
-    this.setupNextLevel();
 
     this.cohort = sampleOne(["positive", "sociopath", "negative"]);
     const cohortCode = this.cohort.slice(0, 2).toUpperCase();
+    // set up the first level which is just the first big red button
+    this.setupNextLevel();
     // this.cohortText =
     // this.add.text(10, 0, "Welcome to control group " + cohortCode, {
     //   fontSize: "60px",
@@ -351,7 +353,7 @@ export class MenuScene extends Phaser.Scene {
     if (this.isTimeTicking) {
       // Show the timer
       const timeSinceMs = new Date().getTime() - this.lastPressTime.getTime();
-      const timeToSolvePuzzle = 10.9;
+      const timeToSolvePuzzle = 10.3;
       let timeLeftSeconds = timeToSolvePuzzle - timeSinceMs / 1000.0;
       if (timeLeftSeconds < 0) {
         this.youLose();

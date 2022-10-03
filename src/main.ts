@@ -40,7 +40,7 @@ const GameConfig: Phaser.Types.Core.GameConfig = {
     // `fullscreenTarget` must be defined for phones to not have
     // a small margin during fullscreen.
     fullscreenTarget: "app",
-    expandParent: false,
+    // expandParent: false,
   },
 };
 
@@ -67,3 +67,22 @@ BasicAnalytics.init({
 });
 
 BasicAnalytics.sendEvent({ key: "pageview" });
+
+function iOS() {
+  return (
+    [
+      "iPad Simulator",
+      "iPhone Simulator",
+      "iPod Simulator",
+      "iPad",
+      "iPhone",
+      "iPod",
+    ].includes(navigator.platform) ||
+    // iPad on iOS 13 detection
+    (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+  );
+}
+
+if (!iOS()) {
+  document.querySelector("#rotate-phone")?.remove();
+}

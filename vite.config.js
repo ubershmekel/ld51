@@ -6,4 +6,7 @@ export default {
     // "Local data URIs are not supported"
     assetsInlineLimit: 0
   },
-}
+  server: {
+    host: true
+  }
+};

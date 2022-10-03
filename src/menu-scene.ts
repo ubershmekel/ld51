@@ -301,7 +301,7 @@ export class MenuScene extends Phaser.Scene {
     });
 
     this.cohort = sampleOne(["positive", "sociopath", "negative"]);
-    const cohortCode = this.cohort.slice(0, 2).toUpperCase();
+    // const cohortCode = this.cohort.slice(0, 2).toUpperCase();
     // set up the first level which is just the first big red button
     this.setupNextLevel();
     // this.cohortText =

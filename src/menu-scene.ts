@@ -2,7 +2,6 @@ import "phaser";
 import particleUrl from "../assets/images/smoke.png";
 import buttonPngUrl from "../assets/images/button.png";
 import buttonJsonUrl from "../assets/images/button.json";
-import gaspUrl from "../assets/sfx/gasp.mp3";
 import { tweenPromise } from "./myphaser";
 import { Crawler } from "./crawler";
 import { SfxNames, Sounds } from "./sounds";

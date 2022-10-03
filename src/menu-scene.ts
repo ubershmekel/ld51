@@ -84,8 +84,8 @@ export class MenuScene extends Phaser.Scene {
     const cohort = this.cohort as CohortName;
     const soundKey = (this.cohort + "-" + index) as SfxNames;
     this.sounds.speak(soundKey);
-    // `index - 1` because the voice lines start a `1` and the array index at `0`
-    this.dialogBox.setText(voiceData[cohort][index - 1]);
+    // `index - 1` because the voice lines start a level `1` and the array index at `0`
+    this.dialogBox.setText(voiceData[cohort].goods[index - 1]);
     this.dialogBox.show();
   }
 
@@ -314,8 +314,8 @@ export class MenuScene extends Phaser.Scene {
       .setDepth(1);
     this.theButton.setInteractive();
     // `armed` concept is for when we transition back to this button
-    // from the end scene. Without arming, the click on the end
-    // will  trigger the button.
+    // from the end scene. Without `armed`, the click on the end
+    // triggered the button.
     let armed = false;
     this.theButton.on("pointerdown", () => {
       if (!this.isButtonLive) {

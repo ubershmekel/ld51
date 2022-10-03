@@ -11,6 +11,9 @@ export type SfxNames = keyof typeof sfx.spritemap;
 let musicEverStarted = false;
 
 export function marker(soundName: SfxNames) {
+  if (!sfx.spritemap[soundName]) {
+    console.log("invalid soundname", soundName);
+  }
   const duration =
     sfx.spritemap[soundName].end - sfx.spritemap[soundName].start;
 

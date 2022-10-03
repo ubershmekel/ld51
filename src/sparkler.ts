@@ -47,4 +47,7 @@ export class Sparkler {
     this.manager.x = x;
     this.manager.y = y;
   }
+  setDepth(depth: number) {
+    this.manager.depth = depth;
+  }
 }

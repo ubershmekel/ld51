@@ -33,12 +33,11 @@ if (cohorts.length !== Object.keys(voiceData).length) {
 
 export class MenuScene extends Phaser.Scene {
   private sprites: { s: Phaser.GameObjects.Image; r: number }[] = [];
-  private level = 1;
+  private level!: number;
   private theButton!: Phaser.GameObjects.Sprite;
   private sounds!: Sounds;
   private lastPressTime = new Date();
   private countdownText!: Phaser.GameObjects.Text;
-  // private cohortText!: Phaser.GameObjects.Text;
   private cohort: CohortName | "" = "";
   private crawlers!: Crawler[];
   private dialogBox!: DialogBox;
@@ -56,6 +55,7 @@ export class MenuScene extends Phaser.Scene {
 
   preload(): void {
     console.log("preloading menu scene", this.level);
+    this.level = 1;
     if (import.meta.env.DEV) {
       // which level do you want to debug and work on now?
       this.level = 1;
@@ -63,7 +63,6 @@ export class MenuScene extends Phaser.Scene {
     }
     new LoadBar(this);
     this.load.image("particle", particleUrl);
-    this.load.audio("gasp", gaspUrl);
     this.rock = new Rock(this);
 
     this.load.aseprite({
@@ -144,6 +143,14 @@ export class MenuScene extends Phaser.Scene {
     }
 
     this.speakByCohort(this.level - 1);
+  }
+
+  isWin() {
+    if (this.level > levelCount) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   async setupLevel() {
@@ -373,8 +380,6 @@ export class MenuScene extends Phaser.Scene {
 
   youLose() {
     this.level = 1;
-    // this.sound.play("gasp");
-    // this.scene.start(this);
     this.gameOver();
   }
 
@@ -388,11 +393,16 @@ export class MenuScene extends Phaser.Scene {
   gameOver() {
     // win or lose
     this.sounds.stopSpeak();
+    if (this.isWin()) {
+      this.sounds.playEndRelief();
+    } else {
+      this.sounds.playEndPanic();
+    }
+
     if (this.cleanUpLevel) {
       this.cleanUpLevel = undefined;
     }
     this.scene.start(endSceneKey, this.getScoreData());
-    this.level = 1;
   }
 
   create(): void {

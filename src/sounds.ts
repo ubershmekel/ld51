@@ -59,6 +59,16 @@ export class Sounds {
     this.speaker.stop();
   }
 
+  playEndPanic() {
+    const keys: SfxNames[] = ["end-panic-1", "end-panic-2", "end-panic-3"];
+    this.play(sampleOne(keys));
+  }
+
+  playEndRelief() {
+    const keys: SfxNames[] = ["end-relief-1", "end-relief-2", "end-relief-3"];
+    this.play(sampleOne(keys));
+  }
+
   playClickUp() {
     const keys: SfxNames[] = ["click-up1", "click-up2", "click-up3"];
     this.play(sampleOne(keys));

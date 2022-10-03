@@ -313,15 +313,25 @@ export class MenuScene extends Phaser.Scene {
       .sprite(this.sys.canvas.width, this.sys.canvas.height, "button")
       .setDepth(1);
     this.theButton.setInteractive();
+    // `armed` concept is for when we transition back to this button
+    // from the end scene. Without arming, the click on the end
+    // will  trigger the button.
+    let armed = false;
     this.theButton.on("pointerdown", () => {
       if (!this.isButtonLive) {
         return;
       }
       this.sounds.playClickDown();
       this.theButton.setFrame(1);
+      armed = true;
+    });
+    this.theButton.on("pointerout", () => {
+      // For when you click and drag the mouse out before you release the button.
+      this.theButton.setFrame(0);
+      armed = false;
     });
     this.theButton.on("pointerup", () => {
-      if (!this.isButtonLive) {
+      if (!this.isButtonLive || !armed) {
         return;
       }
       this.sounds.playClickUp();

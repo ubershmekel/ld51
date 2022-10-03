@@ -3,7 +3,7 @@ import particleUrl from "../assets/images/smoke.png";
 import buttonPngUrl from "../assets/images/button.png";
 import buttonJsonUrl from "../assets/images/button.json";
 import gaspUrl from "../assets/sfx/gasp.mp3";
-import { sampleOne, tweenPromise } from "./myphaser";
+import { tweenPromise } from "./myphaser";
 import { Crawler } from "./crawler";
 import { SfxNames, Sounds } from "./sounds";
 import { LoadBar } from "./load-bar";
@@ -15,6 +15,9 @@ import { buttonImageKey, levelCount } from "./consts";
 import { Rock } from "./rock";
 
 export const menuSceneKey = "MenuScene";
+
+const cohorts: CohortName[] = ["positive", "sociopath", "negative"];
+let cohortIndex = Math.floor(Math.random() * cohorts.length);
 
 export class MenuScene extends Phaser.Scene {
   private sprites: { s: Phaser.GameObjects.Image; r: number }[] = [];
@@ -42,7 +45,7 @@ export class MenuScene extends Phaser.Scene {
   preload(): void {
     if (import.meta.env.DEV) {
       // which level do you want to debug and work on now?
-      this.level = 8;
+      this.level = 1;
       console.log("preload this.level", this.level);
     }
     new LoadBar(this);
@@ -422,7 +425,8 @@ export class MenuScene extends Phaser.Scene {
       this.goToNextLevel();
     });
 
-    this.cohort = sampleOne(["positive", "sociopath", "negative"]);
+    cohortIndex = (cohortIndex + 1) % cohorts.length;
+    this.cohort = cohorts[cohortIndex];
     // const cohortCode = this.cohort.slice(0, 2).toUpperCase();
     // set up the first level which is just the first big red button
     // this.setupLevel();

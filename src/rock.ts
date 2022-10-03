@@ -32,7 +32,7 @@ export class Rock {
       const touchX = pointer.x;
       let xdiff = this.obj.x - touchX;
       // let ydiff = this.obj.y - touchY;
-      console.log("rock", xdiff, this.obj.angle);
+      // console.log("rock", xdiff, this.obj.angle);
       if (xdiff > 25) {
         this.obj.angle += 5;
       }

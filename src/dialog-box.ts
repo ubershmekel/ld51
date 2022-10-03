@@ -81,7 +81,7 @@ export class DialogBox {
     });
 
     this.scene.input.on("pointerup", async () => {
-      if (this.sceneText.text === "") {
+      if (this.sceneText.text === "" || !this.sceneText.visible) {
         // just started, wait a sec
         return;
       }

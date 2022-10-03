@@ -41,6 +41,7 @@ export class EndScene extends Phaser.Scene {
 
   preload() {
     console.log("preload", endSceneKey);
+    this.sounds = new Sounds(this);
     CloseButton.preload(this);
     this.load.aseprite({
       key: buttonImageKey,
@@ -48,7 +49,6 @@ export class EndScene extends Phaser.Scene {
       atlasURL: buttonJsonUrl,
     });
     this.load.image(smokeImageKey, smokeUrl);
-    this.sounds = new Sounds(this);
   }
 
   create() {

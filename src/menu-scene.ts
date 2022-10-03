@@ -56,6 +56,8 @@ export class MenuScene extends Phaser.Scene {
   preload(): void {
     console.log("preloading menu scene", this.level);
     this.level = 1;
+    this.sounds = new Sounds(this);
+
     if (import.meta.env.DEV) {
       // which level do you want to debug and work on now?
       this.level = 1;
@@ -71,7 +73,6 @@ export class MenuScene extends Phaser.Scene {
       atlasURL: buttonJsonUrl,
     });
 
-    this.sounds = new Sounds(this);
     this.crawlers = [
       new Crawler(this),
       new Crawler(this),
@@ -97,7 +98,6 @@ export class MenuScene extends Phaser.Scene {
       });
     }
     this.level += 1;
-    this.updateLevelText();
     this.startLevelDialog();
   }
 
@@ -123,6 +123,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   async startTheLevel() {
+    this.updateLevelText();
     this.isTimeTicking = true;
     this.isButtonLive = true;
     this.lastPressTime = new Date();
